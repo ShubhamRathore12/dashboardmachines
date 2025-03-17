@@ -1,28 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
 import { useTheme } from "next-themes";
-import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Box } from "@react-three/drei";
+import Sidebar from "@/components/dashboard/sidebar";
 
 export default function ContactPage() {
-  const containerRef = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from(".contact-form", {
-        duration: 0.8,
-        y: 20,
-        opacity: 0,
-        stagger: 0.1,
-        ease: "power2.out",
-      });
-    }, containerRef);
-
-    return () => ctx.revert();
-  }, []);
 
   return (
     <div
@@ -30,7 +12,8 @@ export default function ContactPage() {
         theme === "dark" ? "bg-black" : "bg-gray-50"
       }`}
     >
-      <div ref={containerRef} className="flex-1 p-6">
+      <Sidebar />
+      <div className="flex-1 p-6">
         <h1
           className={`text-3xl font-bold mb-8 ${
             theme === "dark" ? "text-white" : "text-black"
@@ -48,57 +31,36 @@ export default function ContactPage() {
             >
               Get in Touch
             </h2>
-            <div className="mb-4">
-              <label
-                className={`block text-sm font-medium ${
-                  theme === "dark" ? "text-gray-300" : "text-gray-700"
-                }`}
-              >
-                Name
-              </label>
-              <input
-                type="text"
-                className={`mt-1 block w-full p-2 border rounded-md ${
-                  theme === "dark"
-                    ? "bg-gray-700 text-white"
-                    : "bg-gray-100 text-black"
-                }`}
-              />
-            </div>
-            <div className="mb-4">
-              <label
-                className={`block text-sm font-medium ${
-                  theme === "dark" ? "text-gray-300" : "text-gray-700"
-                }`}
-              >
-                Email
-              </label>
-              <input
-                type="email"
-                className={`mt-1 block w-full p-2 border rounded-md ${
-                  theme === "dark"
-                    ? "bg-gray-700 text-white"
-                    : "bg-gray-100 text-black"
-                }`}
-              />
-            </div>
-            <div className="mb-4">
-              <label
-                className={`block text-sm font-medium ${
-                  theme === "dark" ? "text-gray-300" : "text-gray-700"
-                }`}
-              >
-                Message
-              </label>
-              <textarea
-                className={`mt-1 block w-full p-2 border rounded-md ${
-                  theme === "dark"
-                    ? "bg-gray-700 text-white"
-                    : "bg-gray-100 text-black"
-                }`}
-                rows={4}
-              ></textarea>
-            </div>
+            {["Name", "Email", "Message"].map((field, index) => (
+              <div className="mb-4" key={index}>
+                <label
+                  className={`block text-sm font-medium ${
+                    theme === "dark" ? "text-gray-300" : "text-gray-700"
+                  }`}
+                >
+                  {field}
+                </label>
+                {field === "Message" ? (
+                  <textarea
+                    className={`mt-1 block w-full p-2 border rounded-md ${
+                      theme === "dark"
+                        ? "bg-gray-700 text-white"
+                        : "bg-gray-100 text-black"
+                    }`}
+                    rows={4}
+                  />
+                ) : (
+                  <input
+                    type={field === "Email" ? "email" : "text"}
+                    className={`mt-1 block w-full p-2 border rounded-md ${
+                      theme === "dark"
+                        ? "bg-gray-700 text-white"
+                        : "bg-gray-100 text-black"
+                    }`}
+                  />
+                )}
+              </div>
+            ))}
             <button
               type="submit"
               className={`w-full p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition`}
@@ -107,15 +69,14 @@ export default function ContactPage() {
             </button>
           </form>
 
-          <div className="h-80">
-            <Canvas>
-              <ambientLight />
-              <pointLight position={[10, 10, 10]} />
-              <OrbitControls />
-              <Box args={[1, 1, 1]} position={[0, 0, 0]}>
-                <meshStandardMaterial attach="material" color="orange" />
-              </Box>
-            </Canvas>
+          <div className="h-80 flex items-center justify-center">
+            <p
+              className={`text-lg ${
+                theme === "dark" ? "text-white" : "text-black"
+              }`}
+            >
+              3D Animation Removed
+            </p>
           </div>
         </div>
       </div>
