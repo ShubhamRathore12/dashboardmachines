@@ -1,15 +1,17 @@
+// app/monitoring-locations/page.tsx
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
-import { Thermometer, Wind, Gauge } from "lucide-react";
+import { Thermometer, Wind, Gauge, Menu } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import Sidebar from "@/components/dashboard/sidebar";
-import { useTheme } from "next-themes";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 export default function MonitoringPage() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { theme } = useTheme();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -54,18 +56,26 @@ export default function MonitoringPage() {
 
   return (
     <div className="flex h-screen">
-      <Sidebar />
+      <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
+        <SheetTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="fixed top-4 left-4 z-50 md:hidden"
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="p-0 w-64">
+          <Sidebar />
+        </SheetContent>
+      </Sheet>
+
       <div
         ref={containerRef}
-        className={`flex-1 p-6 ${
-          theme === "dark" ? "bg-black" : "bg-gray-50"
-        } min-h-screen`}
+        className="flex-1 p-6 bg-gray-50 dark:bg-black min-h-screen"
       >
-        <h1
-          className={`text-3xl font-bold mb-8 ${
-            theme === "dark" ? "text-white" : "text-black"
-          }`}
-        >
+        <h1 className="text-3xl font-bold mb-8 text-black dark:text-white">
           Monitoring Location Overview
         </h1>
 
@@ -73,27 +83,17 @@ export default function MonitoringPage() {
           {monitoringData.map((item, index) => (
             <Card
               key={index}
-              className={`monitoring-card p-6 hover:shadow-lg transition-shadow ${
-                theme === "dark" ? "bg-gray-800" : "bg-white"
-              }`}
+              className={`monitoring-card p-6 hover:shadow-lg transition-shadow bg-white dark:bg-gray-800`}
             >
               <div
                 className={`${item.color} w-12 h-12 rounded-full flex items-center justify-center mb-4`}
               >
                 <item.icon className="w-6 h-6 text-white" />
               </div>
-              <h3
-                className={`text-lg font-semibold mb-2 ${
-                  theme === "dark" ? "text-white" : "text-black"
-                }`}
-              >
+              <h3 className="text-lg font-semibold mb-2 text-black dark:text-white">
                 {item.title}
               </h3>
-              <p
-                className={`text-2xl font-bold ${
-                  theme === "dark" ? "text-white" : "text-black"
-                }`}
-              >
+              <p className="text-2xl font-bold text-black dark:text-white">
                 {item.value}
               </p>
             </Card>
@@ -101,14 +101,8 @@ export default function MonitoringPage() {
         </div>
 
         <div className="mt-8 monitoring-card">
-          <Card
-            className={`p-6 ${theme === "dark" ? "bg-gray-800" : "bg-white"}`}
-          >
-            <h2
-              className={`text-xl font-bold mb-4 ${
-                theme === "dark" ? "text-white" : "text-black"
-              }`}
-            >
+          <Card className="p-6 bg-white dark:bg-gray-800">
+            <h2 className="text-xl font-bold mb-4 text-black dark:text-white">
               System Status
             </h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -138,7 +132,7 @@ function StatusIndicator({
   };
 
   return (
-    <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+    <div className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
       <div className={`w-3 h-3 rounded-full ${colors[status]}`} />
       <span className="font-medium">{label}</span>
     </div>

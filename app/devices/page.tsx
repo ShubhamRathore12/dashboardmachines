@@ -1,197 +1,257 @@
+// app/devices/page.tsx
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { gsap } from "gsap";
-import { Fan, Thermometer, Activity, Settings } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation"; // Import useRouter for navigation
 import Sidebar from "@/components/dashboard/sidebar";
-import { Modal } from "@/components/ui/modal";
-import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Menu, ChevronDown } from "lucide-react";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 export default function DevicesPage() {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [image, setImage] = useState<File | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<string>("");
+  const [selectedCompany, setSelectedCompany] = useState<string>("");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
+  const [isCompanyDropdownOpen, setIsCompanyDropdownOpen] = useState(false);
+  const [selectedDevice, setSelectedDevice] = useState<string | null>(null);
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const router = useRouter();
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from(".device-card", {
-        duration: 0.8,
-        scale: 0.9,
-        opacity: 0,
-        stagger: 0.15,
-        ease: "power3.out",
-      });
-    }, containerRef);
+  const locationDropdownRef = useRef<HTMLDivElement>(null);
+  const companyDropdownRef = useRef<HTMLDivElement>(null);
 
-    return () => ctx.revert();
-  }, []);
-
-  const devices = [
+  const locations = [
     {
-      name: "VI MIXER",
-      status: "Running",
-      temperature: "26.0°C",
-      performance: "100%",
-      lastActivity: "17/08/23 @ 03:00:08 am",
+      name: "Location 1",
+      image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
     },
     {
-      name: "VI CUTTER",
-      status: "Running",
-      temperature: "24.8°C",
-      performance: "95%",
-      lastActivity: "17/08/23 @ 03:00:08 am",
+      name: "Location 2",
+      image: "https://images.unsplash.com/photo-1506260408121-e353d10b87c7",
     },
     {
-      name: "AGITATOR MIXER 1",
-      status: "Running",
-      temperature: "32.9°C",
-      performance: "85%",
-      lastActivity: "17/08/23 @ 03:00:08 am",
-    },
-    {
-      name: "NAS TANK",
-      status: "Running",
-      temperature: "33.6°C",
-      performance: "90%",
-      lastActivity: "17/08/23 @ 03:00:08 am",
+      name: "Location 3",
+      image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b",
     },
   ];
 
-  const handleConfigureClick = () => {
-    setIsModalOpen(true);
-  };
+  const companies = [
+    {
+      name: "Company A",
+      image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+    },
+    {
+      name: "Company B",
+      image: "https://images.unsplash.com/photo-1593642634315-48f5414c3ad9",
+    },
+    {
+      name: "Company C",
+      image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3",
+    },
+  ];
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file && file.size <= 10 * 1024 * 1024) {
-      setImage(file);
-    } else {
-      alert("Please upload an image smaller than 10MB.");
-    }
-  };
+  const devices = [
+    {
+      name: "gT-40E",
+      status: "Device status",
+      image: "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0",
+    },
+    {
+      name: "gT-80E",
+      status: "Device status",
+      image: "https://images.unsplash.com/photo-1519125323398-675f1f8d0d07",
+    },
+    {
+      name: "gT-180E",
+      status: "Device status",
+      image: "https://images.unsplash.com/photo-1522202176988-66273c697b20",
+    },
+    {
+      name: "gT-200E",
+      status: "Device status",
+      image: "https://images.unsplash.com/photo-1531266752426-a1d7a0e2f16a",
+    },
+    {
+      name: "gT-300E",
+      status: "Device status",
+      image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
+    },
+    {
+      name: "gT-400E",
+      status: "Device status",
+      image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3",
+    },
+    {
+      name: "gT-500E",
+      status: "Device status",
+      image: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d",
+    },
+    {
+      name: "gT-600E",
+      status: "Device status",
+      image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c",
+    },
+    {
+      name: "gT-700E",
+      status: "Device status",
+      image: "https://images.unsplash.com/photo-1593642634315-48f5414c3ad9",
+    },
+    {
+      name: "gT-800E",
+      status: "Device status",
+      image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c",
+    },
+  ];
 
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    console.log("Image uploaded:", image);
-    setIsModalOpen(false);
+  // useEffect(() => {
+  //   router.push("/aeration");
+  // }, [router]);
+
+  // Function to handle navigation to the Aeration page
+  const handleViewMore = (deviceName: string) => {
+    router.push("/aeration");
   };
 
   return (
-    <div className="flex h-screen">
-      <Sidebar />
-      <div ref={containerRef} className="flex-1 p-6 bg-gray-50 min-h-screen">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold">Devices Overview</h1>
-          <Button
-            className="bg-blue-600 hover:bg-blue-700"
-            onClick={handleConfigureClick}
-          >
-            <Settings className="w-4 h-4 mr-2" />
-            Configure Devices
-          </Button>
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+      {isMobile ? (
+        <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
+          <SheetTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="fixed top-4 left-4 z-50"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="p-0 w-64">
+            <Sidebar />
+          </SheetContent>
+        </Sheet>
+      ) : (
+        <div className="w-64 shrink-0">
+          <Sidebar />
+        </div>
+      )}
+
+      <div className="flex-1 p-6">
+        <h1 className="text-3xl font-bold mb-8 text-black dark:text-white">
+          Devices Overview
+        </h1>
+
+        <div className="flex space-x-4 mb-6">
+          <div className="flex-1 relative" ref={locationDropdownRef}>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Select Location
+            </label>
+            <Button
+              variant="outline"
+              className="w-full justify-between bg-gray-100 dark:bg-gray-700 text-black dark:text-white"
+              onClick={() => setIsLocationDropdownOpen(!isLocationDropdownOpen)}
+            >
+              {selectedLocation || "Select a location"}
+              <ChevronDown className="h-4 w-4 ml-2" />
+            </Button>
+            {isLocationDropdownOpen && (
+              <Card className="absolute z-10 w-full mt-2 max-h-60 overflow-y-auto bg-white dark:bg-gray-800 shadow-lg">
+                {locations.map((location) => (
+                  <Card
+                    key={location.name}
+                    className="flex items-center p-2 m-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                    onClick={() => {
+                      setSelectedLocation(location.name);
+                      setIsLocationDropdownOpen(false);
+                    }}
+                  >
+                    <img
+                      src={location.image}
+                      alt={location.name}
+                      className="w-10 h-10 object-cover rounded mr-3"
+                    />
+                    <span className="text-sm text-gray-800 dark:text-gray-100">
+                      {location.name}
+                    </span>
+                  </Card>
+                ))}
+              </Card>
+            )}
+          </div>
+
+          <div className="flex-1 relative" ref={companyDropdownRef}>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Select Company
+            </label>
+            <Button
+              variant="outline"
+              className="w-full justify-between bg-gray-100 dark:bg-gray-700 text-black dark:text-white"
+              onClick={() => setIsCompanyDropdownOpen(!isCompanyDropdownOpen)}
+            >
+              {selectedCompany || "Select a company"}
+              <ChevronDown className="h-4 w-4 ml-2" />
+            </Button>
+            {isCompanyDropdownOpen && (
+              <Card className="absolute z-10 w-full mt-2 max-h-60 overflow-y-auto bg-white dark:bg-gray-800 shadow-lg">
+                {companies.map((company) => (
+                  <Card
+                    key={company.name}
+                    className="flex items-center p-2 m-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"
+                    onClick={() => {
+                      setSelectedCompany(company.name);
+                      setIsCompanyDropdownOpen(false);
+                    }}
+                  >
+                    <img
+                      src={company.image}
+                      alt={company.name}
+                      className="w-10 h-10 object-cover rounded mr-3"
+                    />
+                    <span className="text-sm text-gray-800 dark:text-gray-100">
+                      {company.name}
+                    </span>
+                  </Card>
+                ))}
+              </Card>
+            )}
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {devices.map((device, index) => (
             <Card
               key={index}
-              className="device-card p-6 hover:shadow-lg transition-all cursor-pointer"
+              className="device-card p-6 hover:shadow-lg transition-all cursor-pointer bg-white dark:bg-gray-800"
             >
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h3 className="text-xl font-bold">{device.name}</h3>
-                  <p className="text-sm text-gray-500">
-                    Last active: {device.lastActivity}
-                  </p>
-                </div>
-                <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
-                  {device.status}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-3 gap-4 mb-4">
-                <Stat
-                  icon={Thermometer}
-                  label="Temperature"
-                  value={device.temperature}
-                  color="text-red-500"
-                />
-                <Stat
-                  icon={Activity}
-                  label="Performance"
-                  value={device.performance}
-                  color="text-blue-500"
-                />
-                <Stat
-                  icon={Fan}
-                  label="Fan Speed"
-                  value="Normal"
-                  color="text-green-500"
-                />
-              </div>
-
-              <div className="mt-4 pt-4 border-t border-gray-100 flex justify-end space-x-3">
-                <Link href={`/devices/${device.name}`}>
-                  <Button variant="outline" size="sm">
-                    View Details
-                  </Button>
-                </Link>
+              <img
+                src={device.image}
+                alt={device.name}
+                className="w-full h-32 object-cover rounded mb-4"
+              />
+              <h3 className="text-xl font-bold text-black dark:text-white">
+                {device.name}
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {device.status}
+              </p>
+              <div className="mt-4 flex justify-end space-x-3">
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={handleConfigureClick}
+                  onClick={() => handleViewMore(device.name)}
                 >
-                  Configure
+                  View More
+                </Button>
+                <Button variant="outline" size="sm">
+                  Download Files
                 </Button>
               </div>
             </Card>
           ))}
         </div>
       </div>
-
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <div className="p-6">
-          <h2 className="text-xl font-bold mb-4">Configure Devices</h2>
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">
-                Upload Device Image
-              </label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="border rounded p-2 w-full"
-              />
-            </div>
-            <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
-              Save
-            </Button>
-          </form>
-        </div>
-      </Modal>
-    </div>
-  );
-}
-
-function Stat({
-  icon: Icon,
-  label,
-  value,
-  color,
-}: {
-  icon: any;
-  label: string;
-  value: string;
-  color: string;
-}) {
-  return (
-    <div className="flex flex-col items-center text-center">
-      <Icon className={`w-6 h-6 ${color} mb-2`} />
-      <span className="text-sm text-gray-500">{label}</span>
-      <span className="font-semibold">{value}</span>
     </div>
   );
 }

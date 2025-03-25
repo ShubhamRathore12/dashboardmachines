@@ -27,8 +27,8 @@ const menuItems = [
   { icon: Zap, label: "Triggers", href: "/triggers" },
   { icon: Layers, label: "Clusters", href: "/clusters" },
   { icon: FileText, label: "Reports", href: "/reports" },
-  { icon: Layers, label: "Aeration", href: "/aeration" },
-  { icon: FileText, label: "Grain", href: "/grain" },
+
+  { icon: LayoutDashboard, label: "Registration", href: "/registration-form" },
 ];
 
 export default function Sidebar() {

@@ -1,15 +1,24 @@
+// app/notifications/page.tsx
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import Sidebar from "@/components/dashboard/sidebar"; // Import the Sidebar component
-import { useTheme } from "next-themes"; // Import useTheme for dark/light mode
 import { Card } from "@/components/ui/card"; // Assuming you have a Card component
-import { Bell, CheckCircle, Info, XCircle } from "lucide-react"; // Import icons
+import { Bell, CheckCircle, Info, XCircle, Menu } from "lucide-react"; // Import icons
+import { Button } from "@/components/ui/button"; // Import Button component
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"; // Import Sheet components
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 export default function NotificationPage() {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { theme } = useTheme();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // State for sidebar visibility
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const SidebarContent = (
+    <div className="relative h-full bg-gray-100 dark:bg-gray-900 text-black dark:text-white">
+      <Sidebar />
+    </div>
+  );
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -53,19 +62,28 @@ export default function NotificationPage() {
   ];
 
   return (
-    <div className="flex h-screen">
-      <Sidebar />
-      <div
-        ref={containerRef}
-        className={`flex-1 p-6 ${
-          theme === "dark" ? "bg-black" : "bg-gray-50"
-        } min-h-screen`}
-      >
-        <h1
-          className={`text-3xl font-bold mb-8 ${
-            theme === "dark" ? "text-white" : "text-black"
-          }`}
-        >
+    <div className="flex h-screen bg-gray-50 dark:bg-black">
+      {/* Hamburger Menu for Mobile */}
+      {isMobile ? (
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="fixed top-4 left-4 z-50"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left" className="p-0 w-64">
+            {SidebarContent}
+          </SheetContent>
+        </Sheet>
+      ) : (
+        <div className="w-64 shrink-0">{SidebarContent}</div>
+      )}{" "}
+      <div ref={containerRef} className="flex-1 p-6">
+        <h1 className="text-3xl font-bold mb-8 text-black dark:text-white">
           Notifications
         </h1>
 
@@ -73,25 +91,15 @@ export default function NotificationPage() {
           {notifications.map((notification) => (
             <Card
               key={notification.id}
-              className={`notification-card p-4 hover:shadow-xl transition-shadow transform hover:scale-105 ${
-                theme === "dark" ? "bg-gray-800" : "bg-white"
-              } rounded-lg border border-gray-200 dark:border-gray-700`}
+              className="notification-card p-4 hover:shadow-xl transition-shadow transform hover:scale-105 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
             >
               <div className="flex items-center mb-2">
                 {notification.icon}
-                <p
-                  className={`text-lg ml-2 ${
-                    theme === "dark" ? "text-white" : "text-black"
-                  }`}
-                >
+                <p className="text-lg ml-2 text-black dark:text-white">
                   {notification.message}
                 </p>
               </div>
-              <span
-                className={`text-sm ${
-                  theme === "dark" ? "text-gray-400" : "text-gray-600"
-                }`}
-              >
+              <span className="text-sm text-gray-600 dark:text-gray-400">
                 {notification.time}
               </span>
             </Card>
